@@ -1,0 +1,80 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="static/xterm.css" />
+        <link rel="stylesheet" href="static/fullscreen.css" />
+        <script src="static/xterm.js"></script>
+        <script src="static/fullscreen.js"></script>
+        <script src="static/jquery.min.js"></script>
+        <style>
+            body {
+                color: #111;
+            }
+
+            #terminal-container {
+                max-width: 900px;
+                margin: 0 auto;
+            }
+            #connect {
+                margin: 0 auto;
+            }
+            #terminal-container a {
+                color: #fff;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="connect">
+            <input name="h" value="192.168.234.8" /><input name="p" value="2375" /><input name="containers_id" value="c0919de5bf2e"/>
+            <button onclick="ws_connect()" id="connect_container">连接</button>
+            <button onclick="ws_close()" id="drop_container" style="display:none">断开</button>
+        </div>
+        <div id="terminal-container"></div>
+        <script>
+            cols=parseInt(document.body.clientWidth / 10)
+            rows=parseInt(document.body.clientHeight / 20)
+            var socket
+            var term = new Terminal({
+                "cursorBlink":true,
+                "rows":rows,
+                "cols":cols,
+            })
+            function ws_connect(){
+                $("#connect_container").hide()
+                $("#drop_container").show()
+                h=$("input[name=h]").val()
+                p=$("input[name=p]").val()
+                containers_id=$("input[name=containers_id]").val()
+                console.log(h,p,containers_id)
+                if( h == "" || p == "" || containers_id == ""){
+                    alert("不能为空!")
+                    return false
+                }
+                container = document.getElementById('terminal-container');
+                url = 'ws://192.168.235.182:8011/ws?h='+h+'&p='+p+'&containers_id='+containers_id+'&rows='+rows+'&cols='+cols
+                socket = new WebSocket(url);
+                $("#terminal-container").html("")
+                term.open(document.getElementById('terminal-container'));
+                term.toggleFullscreen(true);
+
+                term.on('data', function (data) {
+                    socket.send(data);
+                });
+
+                socket.onmessage = function (e) {
+                    obj=JSON.parse(e.data);
+                    term.write(obj.data);
+                }
+                socket.onclose = function (e) {
+                    term.write("session is close");
+                    $("#connect_container").show()
+                    $("#drop_container").hide()
+                }
+            }
+            function ws_close(){
+                socket.close()
+                $("#connect_container").show()
+                $("#drop_container").hide()
+            }
+        </script>
+    </body>
+</html>
