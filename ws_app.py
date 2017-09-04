@@ -1,6 +1,4 @@
 #-*- encoding:utf-8 -*-  
-#2014-12-18  
-#author: orangleliu  
   
 import tornado.web  
 import tornado.websocket  
@@ -8,19 +6,15 @@ import tornado.httpserver
 import tornado.ioloop  
 import subprocess
 from docker import Client
-import paramiko
 import time
 import socket
 from tornado import gen
 import socket
 import sys
-import select
-import gevent
 import threading
 import Queue
 import requests
 import json
-import chardet
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -35,7 +29,6 @@ class MyThread(threading.Thread):
                 data = self.channel.sock.recv(512)
                 if not data:
                     break
-                #code=chardet.detect(data)
                 print data
                 data_json={"data":data}
                 self.channel.write_message(json.dumps(data_json))
