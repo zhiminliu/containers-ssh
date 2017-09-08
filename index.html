@@ -14,7 +14,6 @@
             }
 
             #terminal-container {
-                max-width: 900px;
                 margin: 0 auto;
             }
             #connect {
@@ -22,6 +21,9 @@
             }
             #terminal-container a {
                 color: #fff;
+            }
+            .panel-body{
+                background-color: #000;
             }
         </style>
     </head>
@@ -52,7 +54,7 @@
             port=location.port
 
             console.log(document.body.clientWidth)
-            cols=parseInt(document.body.clientWidth /20)
+            cols=parseInt(document.body.clientWidth /9)
             rows=parseInt(document.body.clientHeight / 25)
             var socket
             var term = new Terminal({
