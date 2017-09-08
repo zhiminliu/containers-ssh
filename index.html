@@ -1,13 +1,16 @@
 <html>
     <head>
         <link rel="stylesheet" href="static/xterm.css" />
-        <link rel="stylesheet" href="static/fullscreen.css" />
+        <!--<link rel="stylesheet" href="static/fullscreen.css" />-->
+        <link rel="stylesheet" href="static/bootstrap.min.css" />
         <script src="static/xterm.js"></script>
-        <script src="static/fullscreen.js"></script>
+        <!-- <script src="static/fullscreen.js"></script>-->
         <script src="static/jquery.min.js"></script>
+        <script src="static/bootstrap.min.js"></script>
         <style>
             body {
                 color: #111;
+                margin: 20px;
             }
 
             #terminal-container {
@@ -23,21 +26,41 @@
         </style>
     </head>
     <body>
-        <div id="connect">
-            <input name="h" value="192.168.234.8" /><input name="p" value="2375" /><input name="containers_id" value="c0919de5bf2e"/>
-            <button onclick="ws_connect()" id="connect_container">连接</button>
-            <button onclick="ws_close()" id="drop_container" style="display:none">断开</button>
+
+        <form class="form-inline">
+            <div class="form-group">
+                <label for="">宿主机IP</label>
+                <input type="text" class="form-control" name="h" placeholder="192.168.234.8" value="192.168.234.8"></div>
+            <div class="form-group">
+                <label for="">DOCKER端口</label>
+                <input type="text" class="form-control" name="p" placeholder="2375" value="2375"></div>
+            <div class="form-group">
+                <label for="">容器ID</label>
+                <input type="text" class="form-control" name="containers_id" placeholder="c0919de5bf2e" value="c0919de5bf2e"></div>
+            <button type="button" class="btn btn-default" onclick="ws_connect()" id="connect_container">连接</button>
+            <button type="button" class="btn btn-default" onclick="ws_close()" id="drop_container" style="display:none">断开</button>
+        </form>
+        <div class="panel panel-default">
+            <div class="panel-heading">控制台</div>
+            <div class="panel-body">
+                <div id="terminal-container"></div>
+            </div>
         </div>
-        <div id="terminal-container"></div>
         <script>
-            cols=parseInt(document.body.clientWidth / 10)
-            rows=parseInt(document.body.clientHeight / 20)
+            //获取主机 端口
+            hostname=location.hostname
+            port=location.port
+
+            console.log(document.body.clientWidth)
+            cols=parseInt(document.body.clientWidth /20)
+            rows=parseInt(document.body.clientHeight / 25)
             var socket
             var term = new Terminal({
                 "cursorBlink":true,
                 "rows":rows,
                 "cols":cols,
             })
+
             function ws_connect(){
                 $("#connect_container").hide()
                 $("#drop_container").show()
@@ -50,11 +73,12 @@
                     return false
                 }
                 container = document.getElementById('terminal-container');
-                url = 'ws://192.168.235.182:8011/ws?h='+h+'&p='+p+'&containers_id='+containers_id+'&rows='+rows+'&cols='+cols
+                url = 'ws://'+hostname+':'+port+'/ws?h='+h+'&p='+p+'&containers_id='+containers_id+'&rows='+rows+'&cols='+cols
                 socket = new WebSocket(url);
                 $("#terminal-container").html("")
                 term.open(document.getElementById('terminal-container'));
-                term.toggleFullscreen(true);
+                console.log(term)
+                //term.toggleFullscreen(true);
 
                 term.on('data', function (data) {
                     socket.send(data);
