@@ -1,7 +1,4 @@
 #-*- encoding:utf-8 -*-  
-#2014-12-18  
-#author: orangleliu  
-  
 import tornado.web  
 import tornado.websocket  
 import tornado.httpserver  
