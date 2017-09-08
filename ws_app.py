@@ -3,21 +3,14 @@ import tornado.web
 import tornado.websocket  
 import tornado.httpserver  
 import tornado.ioloop  
-import subprocess
 from docker import Client
-import paramiko
 import time
 import socket
-from tornado import gen
-import socket
 import sys
-import select
-import gevent
 import threading
 import Queue
 import requests
 import json
-import chardet
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -64,7 +57,7 @@ def connect_containers(host,port,containers_id):
     })
     status={"status":True,"response":""}
     try:
-        url='http://%s:%s/v1.24/containers/%s/exec'%(host,str(port),containers_id)
+        url='http://%s:%s/containers/%s/exec'%(host,str(port),containers_id)
         result=requests.post(url, data=data,headers=headers)
         result_obj=result.text.replace("\n","")
         result_json=json.loads(result_obj)
@@ -80,7 +73,7 @@ def resize_containers(host,port,containers_id,width,height):
         "Content-Type":"text/plain"
     }
     try:
-        url='http://%s:%s/v1.24/exec/%s/resize?h=%s&w=%s'%(host,str(port),containers_id,width,height)
+        url='http://%s:%s/exec/%s/resize?h=%s&w=%s'%(host,str(port),containers_id,width,height)
         result=requests.post(url,data={},headers=headers)
     except Exception,ex:
         print str(ex)
